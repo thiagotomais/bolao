@@ -41,6 +41,17 @@ class SettingsSeeder extends Seeder
             'updated_at' => now(),
         ]
     );
+
+        DB::table('settings')->updateOrInsert(
+        ['key' => 'estimated_prize', 'year' => 2025],
+        [
+            'value'      => '850000000.00',
+            'type'       => 'decimal',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]
+    );
+
 }
 
 }

@@ -28,6 +28,7 @@
         <tr>
             <th>Nome</th>
             <th>Telefone</th>
+            <th>Link do participante</th>
             <th>Valor</th>
             <th>%</th>
             <th>Adicionar participação</th>
@@ -44,6 +45,12 @@
             <tr>
                 <td>{{ $p->name }}</td>
                 <td>{{ $p->phone }}</td>
+                <td>
+                    <a href="{{ url('/p/' . $p->hash1 . '/' . $p->hash2) }}"
+                       target="_blank">
+                        Abrir link
+                    </a>
+                </td>
                 <td>R$ {{ number_format($value, 2, ',', '.') }}</td>
                 <td>{{ number_format($percent, 2, ',', '.') }}%</td>
                 <td>
@@ -57,7 +64,7 @@
             </tr>
         @empty
             <tr>
-                <td colspan="5">Nenhum participante.</td>
+                <td colspan="6">Nenhum participante.</td>
             </tr>
         @endforelse
     </tbody>

@@ -73,4 +73,25 @@ class SettingsService
     {
         return $this->get('closing_datetime', $year);
     }
+
+    public function getEstimatedPrize(int $year = null): float
+    {
+        return (float) $this->get('estimated_prize', $year);
+    }
+
+    public function getDrawNumbers(int $year = null): array
+    {
+        $raw = $this->get('draw_numbers', $year);
+
+        if (!$raw) {
+            return [];
+        }
+
+        // Aceita vírgula, pipe ou espaço
+        $numbers = preg_split('/[\s,|]+/', $raw);
+
+        return array_map('intval', $numbers);
+    }
+
+
 }

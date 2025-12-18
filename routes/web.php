@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminLoginController;
+use App\Http\Controllers\ParticipantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,3 +73,7 @@ Route::prefix('admin')->middleware('admin.auth')->group(function () {
 */
 
 Route::get('/', fn () => view('welcome'));
+
+
+Route::get('/p/{hash1}/{hash2}', [ParticipantController::class, 'show'])
+    ->name('participant.public');

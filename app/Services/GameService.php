@@ -87,16 +87,22 @@ class GameService
     }
 
     /**
-     * Retorna jogos por ano e status.
+     * Retorna jogos por ano e status, trazendo recibo quando existir.
      */
     public function getGames(int $year = null, string $status = null)
     {
         $year = $this->getYear($year);
 
-        $query = DB::table('games')->where('year', $year);
+        $query = DB::table('games')
+            ->leftJoin('receipts', 'receipts.id', '=', 'games.receipt_id')
+            ->where('games.year', $year)
+            ->select(
+                'games.*',
+                'receipts.file_path'
+            );
 
         if ($status) {
-            $query->where('status', $status);
+            $query->where('games.status', $status);
         }
 
         return $query->get();

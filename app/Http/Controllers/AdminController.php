@@ -124,7 +124,7 @@ public function storeParticipant(Request $request)
     $year = (int) env('APP_ANO');
 
     $hash1 = md5($year) . sha1($request->phone);
-    $hash2 = md5($year) . sha1($request->phone) . sha1($year);
+    $hash2 = md5($hash1) . sha1($request->phone) . sha1($year);
 
     $this->participantService->create(
         $request->name,
@@ -296,6 +296,7 @@ public function finalizePool(int $year, bool $allowComplement = false): void
 
     $this->settingsService->set('pool_status', 'closed', $year);
 }
+
 
 
 }
