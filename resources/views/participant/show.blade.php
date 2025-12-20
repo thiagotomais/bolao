@@ -137,7 +137,7 @@
         <!-- Prêmio proporcional -->
         <div class="col">
             <strong>🎯 Sua estimativa proporcional</strong><br>
-            R$ {{ number_format($estimatedUserPrize, 2, ',', '.') }}
+            R$ {{ number_format($estimatedUserPrize*0.9, 2, ',', '.') }}
         </div>
     </div>
 

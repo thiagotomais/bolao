@@ -49,7 +49,12 @@
                     <a href="{{ url('/p/' . $p->hash1 . '/' . $p->hash2) }}"
                        target="_blank">
                         Abrir link
-                    </a>
+                    </a> | 
+					<a target="_blank"
+					   href="https://api.whatsapp.com/send/?phone={{ $p->phone }}&text=%F0%9F%8D%80%20Bol%C3%A3o%20Mega%20da%20Virada%202025%0A%0AAqui%20est%C3%A1%20seu%20link%20individual%20para%20acompanhar%20sua%20participa%C3%A7%C3%A3o%2C%20os%20jogos%20realizados%20e%20os%20comprovantes%3A%0A{{ url('/p/' . $p->hash1 . '/' . $p->hash2) }}&type=phone_number&app_absent=0">
+						Enviar no WhatsApp
+					</a>
+
                 </td>
                 <td>R$ {{ number_format($value, 2, ',', '.') }}</td>
                 <td>{{ number_format($percent, 2, ',', '.') }}%</td>
