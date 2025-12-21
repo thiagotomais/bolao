@@ -38,19 +38,10 @@
             background: #eee;
         }
 
-        .success {
-            background: #e6f4ea;
-            color: #137333;
-        }
+        .success { background: #e6f4ea; color: #137333; }
+        .warning { background: #fff4e5; color: #a15c00; }
 
-        .warning {
-            background: #fff4e5;
-            color: #a15c00;
-        }
-
-        .numbers {
-            margin-top: 8px;
-        }
+        .numbers { margin-top: 8px; }
 
         .ball {
             display: inline-block;
@@ -65,207 +56,164 @@
             font-weight: bold;
         }
 
-        .row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
+        .row { display: flex; flex-wrap: wrap; gap: 20px; }
+        .col { flex: 1; min-width: 220px; }
 
-        .col {
-            flex: 1;
-            min-width: 220px;
-        }
-
-        a {
-            color: #1976d2;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .muted {
-            color: #777;
-        }
+        .muted { color: #777; }
     </style>
 </head>
 <body>
 
 <div class="container">
 
-   
- <!-- PAINEL PARTICIPANTE -->
-
- <!-- PAINEL GERAL -->
-<div class="card">
-    <h1>🎉 Bolão Mega da Virada {{ env('APP_ANO') }}</h1>
-    <p class="muted">
-        Participante: <strong>{{ $participant->name }}</strong>
-    </p>
-
-    <div class="row" style="margin-top:20px">
-
-        <!-- Total do bolão -->
-        <div class="col">
-            <strong>💰 Total do bolão</strong><br>
-            R$ {{ number_format($totalValue, 2, ',', '.') }}
-        </div>
-
-        <!-- Valor investido -->
-        <div class="col">
-            <strong>💵 Seu investimento</strong><br>
-            R$ {{ number_format($participantValue, 2, ',', '.') }}
-        </div>
-
-        <!-- Percentual -->
-        <div class="col">
-            <strong>📊 Sua participação</strong><br>
-            {{ number_format($percent * 100, 2, ',', '.') }}%
-        </div>
-    </div>
-
-    <hr style="margin:20px 0; border:none; border-top:1px solid #eee">
-
-    <div class="row">
-        <!-- Prêmio total -->
-        <div class="col">
-            <strong>🏆 Prêmio estimado do concurso</strong><br>
-            R$ {{ number_format($estimatedPrize, 2, ',', '.') }}
-        </div>
-
-        <!-- Prêmio proporcional -->
-        <div class="col">
-            <strong>🎯 Sua estimativa proporcional</strong><br>
-            R$ {{ number_format($estimatedUserPrize*0.9, 2, ',', '.') }}
-        </div>
-    </div>
-
-    <p class="muted" style="font-size:12px; margin-top:12px">
-        * Valores estimados, sujeitos a variações e regras oficiais da Caixa.
-    </p>
-</div>
-
-@if (!empty($drawNumbers))
+    <!-- PAINEL GERAL -->
     <div class="card">
-        <h2>🎯 Números Sorteados</h2>
+        <h1>🎉 Bolão Mega da Virada {{ env('APP_ANO') }}</h1>
+        <p class="muted">Participante: <strong>{{ $participant->name }}</strong></p>
 
-        <div class="numbers">
-            @foreach ($drawNumbers as $n)
-                <span class="ball" style="background:#2e7d32">
-                    {{ $n }}
-                </span>
-            @endforeach
+        <div class="row" style="margin-top:20px">
+            <div class="col">
+                <strong>💰 Total do bolão</strong><br>
+                R$ {{ number_format($totalValue, 2, ',', '.') }}
+            </div>
+
+            <div class="col">
+                <strong>💵 Seu investimento</strong><br>
+                R$ {{ number_format($participantValue, 2, ',', '.') }}
+            </div>
+
+            <div class="col">
+                <strong>📊 Sua participação</strong><br>
+                {{ number_format($percent * 100, 2, ',', '.') }}%
+            </div>
         </div>
 
-        <p class="muted" style="margin-top:10px">
-            Resultado oficial do sorteio.
+        <hr style="margin:20px 0; border:none; border-top:1px solid #eee">
+
+        <div class="row">
+            <div class="col">
+                <strong>🏆 Prêmio estimado</strong><br>
+                R$ {{ number_format($estimatedPrize, 2, ',', '.') }}
+            </div>
+
+            <div class="col">
+                <strong>🎯 Sua estimativa proporcional</strong><br>
+                R$ {{ number_format($estimatedUserPrize * 0.9, 2, ',', '.') }}
+            </div>
+        </div>
+
+        <p class="muted" style="font-size:12px; margin-top:12px">
+            * Valores estimados.
         </p>
     </div>
-@endif
 
+    <!-- RESULTADO -->
+    @if (!empty($drawNumbers))
+        <div class="card">
+            <h2>🎯 Números Sorteados</h2>
+            <div class="numbers">
+                @foreach ($drawNumbers as $n)
+                    <span class="ball" style="background:#2e7d32">{{ $n }}</span>
+                @endforeach
+            </div>
+        </div>
+    @endif
 
-    <!-- JOGOS -->
+    <!-- JOGOS OU PROGRESSO -->
     <div class="card">
-        <h2>🎟️ Jogos Definidos</h2>
+        <h2>🎟️ Jogos do Bolão</h2>
 
-        @if (count($games) === 0)
-            <p class="muted">Nenhum jogo confirmado até o momento.</p>
+        @if ($games->count() === 0)
+
+            <div class="card" style="background:#fafafa">
+                <h3>📈 Progresso do Bolão</h3>
+
+                @if ($simulation['status'] === 'progress')
+                    <p>
+                        Já é possível realizar um jogo com
+                        <strong>{{ $simulation['current']['game_size'] }} números</strong>.
+                    </p>
+
+                    <p>
+                        @php
+    $currentSize = $simulation['current']['game_size'];
+    $nextSize    = $simulation['next']['game_size'];
+
+    $currentOdds = $probabilities[$currentSize]['sena'] ?? null;
+    $nextOdds    = $probabilities[$nextSize]['sena'] ?? null;
+@endphp
+
+<p>
+    Para chegar a
+    <strong>{{ $nextSize }} números</strong>,
+    faltam
+    <strong>R$ {{ number_format($simulation['missing'], 2, ',', '.') }}</strong>.
+</p>
+
+@if ($currentOdds && $nextOdds)
+    <p class="muted" style="font-size:13px; margin-top:4px">
+        Assim, aumentamos nossa chance de
+        <strong>1 em {{ number_format($currentOdds, 0, ',', '.') }}</strong>
+        para
+        <strong>1 em {{ number_format($nextOdds, 0, ',', '.') }}</strong>.
+    </p>
+@endif
+                    </p>
+
+                    <div style="margin-top:12px">
+						<div style="
+							background:#cfcfcf;
+							border-radius: 20px;
+							height: 20px;
+							overflow: hidden;
+							position: relative;
+						">
+							<div style="
+								width: {{ $simulation['progress'] }}%;
+								height: 100%;
+								background:#1976d2;
+								border-radius: 20px;
+							"></div>
+
+							<span style="
+								position: absolute;
+								right: 10px;
+								top: 50%;
+								transform: translateY(-50%);
+								font-size: 12px;
+								font-weight: bold;
+								color: #000;
+							">
+								{{ number_format($simulation['progress'], 1) }}%
+							</span>
+						</div>
+					</div>
+
+
+                @elseif ($simulation['status'] === 'max_reached')
+                    <p>🎯 O bolão já atingiu o maior tipo de jogo disponível.</p>
+                @else
+                    <p>Ainda não há valor suficiente para gerar jogos.</p>
+                @endif
+            </div>
+
         @else
+
             @foreach ($games as $game)
                 <div class="card" style="background:#fafafa">
                     <strong>{{ $game->game_size }} números</strong>
 
-                    @if (!empty($game->file_path))
-                        <span class="badge success">Jogo registrado</span>
-                    @else
-                        <span class="badge warning">Aguardando registro na lotérica</span>
-                    @endif
-
-
                     <div class="numbers">
                         @foreach ($game->numbers as $n)
-                            @php
-                                $isHit = in_array($n, $drawNumbers ?? []);
-                            @endphp
-
-                            <span class="ball"
-                                style="
-                                    background: {{ $isHit ? '#2e7d32' : '#1976d2' }};
-                                    box-shadow: {{ $isHit ? '0 0 8px rgba(46,125,50,0.8)' : 'none' }};
-                                ">
+                            @php $hit = in_array($n, $drawNumbers ?? []); @endphp
+                            <span class="ball" style="background: {{ $hit ? '#2e7d32' : '#1976d2' }}">
                                 {{ $n }}
                             </span>
-
                         @endforeach
-                    </div>
-
-                      
-                    @php
-    $odd = $probabilities[$game->game_size] ?? null;
-@endphp
-
-@if ($odd)
-    <div style="margin-top:12px;">
-        <table style="
-            border-collapse: collapse;
-            font-size: 13px;
-            background: #fafafa;
-            width: auto;
-        ">
-            <thead>
-                <tr>
-                    <th style="border:1px solid #ddd; padding:6px 10px; text-align:left;">
-                        Quantidade de números
-                    </th>
-                    <th style="border:1px solid #ddd; padding:6px 10px;">
-                        Sena
-                    </th>
-                    <th style="border:1px solid #ddd; padding:6px 10px;">
-                        Quina
-                    </th>
-                    <th style="border:1px solid #ddd; padding:6px 10px;">
-                        Quadra
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td style="border:1px solid #ddd; padding:6px 10px;">
-                        {{ $game->game_size }}
-                    </td>
-                    <td style="border:1px solid #ddd; padding:6px 10px; text-align:center;">
-                        {{ number_format($odd['sena'], 0, ',', '.') }}
-                    </td>
-                    <td style="border:1px solid #ddd; padding:6px 10px; text-align:center;">
-                        {{ number_format($odd['quina'], 0, ',', '.') }}
-                    </td>
-                    <td style="border:1px solid #ddd; padding:6px 10px; text-align:center;">
-                        {{ number_format($odd['quadra'], 0, ',', '.') }}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div class="muted" style="font-size:12px; margin-top:4px;">
-            Probabilidade de acerto (1 em)
-        </div>
-    </div>
-@endif
-
-
-
-                    <div style="margin-top:10px">
-                        @if (!empty($game->file_path))
-                            <a href="{{ asset('storage/' . $game->file_path) }}" target="_blank">
-                                📄 Ver comprovante
-                            </a>
-                        @else
-                            <span class="badge warning">Comprovante pendente</span>
-                        @endif
                     </div>
                 </div>
             @endforeach
+
         @endif
     </div>
 

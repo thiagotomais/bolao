@@ -81,5 +81,56 @@ public function getSimulationSummary(float $totalValue, array $simulation, int $
     ];
 }
 
+public function simulateProgress(float $totalValue, int $year = null): array
+{
+    $year = $year ?? (int) env('APP_ANO');
+
+    $prices = $this->gamePriceService->allPrices($year); // [game_size => price]
+    ksort($prices); // garante ordem crescente
+
+    $current = null;
+    $next = null;
+
+    foreach ($prices as $size => $price) {
+        if ($price <= $totalValue) {
+            $current = [
+                'game_size' => $size,
+                'price' => $price
+            ];
+        } elseif (!$next) {
+            $next = [
+                'game_size' => $size,
+                'price' => $price
+            ];
+            break;
+        }
+    }
+
+    if (!$current) {
+        return [
+            'status' => 'insufficient',
+            'needed_for_first' => reset($prices),
+        ];
+    }
+
+    if (!$next) {
+        return [
+            'status' => 'max_reached',
+            'current' => $current
+        ];
+    }
+
+    $missing = $next['price'] - $totalValue;
+    $progress = ($totalValue / $next['price']) * 100;
+
+    return [
+        'status' => 'progress',
+        'current' => $current,
+        'next' => $next,
+        'missing' => round($missing, 2),
+        'progress' => round($progress, 2),
+    ];
+}
+
 
 }

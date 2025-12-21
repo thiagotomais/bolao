@@ -63,6 +63,9 @@ class ParticipantController extends Controller
         $drawNumbers = app(\App\Services\SettingsService::class)
         ->getDrawNumbers($year);
 
+		$simulation = app(\App\Services\GameStrategyService::class)
+			->simulateProgress($totalValue, $year);
+
 
         return view('participant.show', compact(
             'participant',
@@ -73,7 +76,9 @@ class ParticipantController extends Controller
             'probabilities',
             'estimatedPrize',
             'estimatedUserPrize',
-            'drawNumbers'
+            'drawNumbers',
+			'simulation'
+
         ));
     }
 }
